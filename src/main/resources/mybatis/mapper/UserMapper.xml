@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jbc.demoa.mapper.UserMapper">
+
+
+    <select id="getAllAdminList" resultType="admin_account">
+select * from admin_account
+</select>
+
+    <select id="getAdminByName" resultType="admin_account">
+select * from admin_account where accountID=#{accountID}
+</select>
+
+    <insert id="addAdmin" parameterType="admin_account">
+        insert into admin_account (userName,password,phoneNo)values(#{userName},#{password},#{phoneNo})
+    </insert>
+
+<!--//获取所有医生账户信息-->
+    <select id="getAllDocList" resultType="doc_account">
+        select * from doc_account
+    </select>
+
+<!--    增加医生账户-->
+    <insert id="addDocAccount" parameterType="doc_account">
+        insert into doc_account (userName,password,phoneNo)values(#{userName},#{password},#{phoneNo})
+    </insert>
+
+<!--    增加医生个人资料(基础)  通过医生账号中的编号-->
+    <insert id="addDocBase" parameterType="doctor">
+        insert into doctor (daccountNo,phoneNo)values (#{daccountNo},#{phoneNo})
+    </insert>
+
+<!--    通过电话在doc_account表中查询id-->
+    <select id="getDocIdByPhoneNo" resultType="int" parameterType="String">
+        select daccountNo from doc_account where phoneNo = #{phone}
+    </select>
+
+<!--    新增病人账户-->
+    <insert id="addPatientAccount" parameterType="patient_account">
+        insert into patient_account (userName,password,phoneNo)values(#{userName},#{password},#{phoneNo})
+    </insert>
+
+<!--    新增病人-->
+    <insert id="addPatient" parameterType="patient">
+        insert into patient (patientName,phoneNo)values (#{patientName},#{phoneNo})
+    </insert>
+
+<!--    查询病人账户编号-->
+    <select id="getPatientAccountNoByPhone" resultType="int" parameterType="String">
+        select paccountNo from patient_account  where phoneNo = #{phone}
+    </select>
+
+<!--    通过电话查询病人id-->
+    <select id="getPatientIdByPhone" resultType="int" parameterType="String">
+        select patientID from patient where phoneNo = #{phone}
+    </select>
+
+<!--    向病人账户中添加病人id-->
+    <update id="updatePatientAccountPatientIdByPhone" >
+        update patient_account set patientID = #{patientId} where phoneNo=#{phone}
+    </update>
+
+<!--    向病人添加病人账户-->
+    <update id="updatePatientPatientAccountByPhone">
+        update  patient set paccountNo =#{patientAccountNo} where  phoneNo=#{phone}
+    </update>
+
+<!--   验证管理员账户是否存在，存在是1，不存在是0-->
+    <select id="checkAdminAccount" resultType="int" >
+        SELECT DISTINCT IF(EXISTS(SELECT 1 FROM admin_account where phoneNo=#{phone} and password =#{password}),1,0) AS a FROM admin_account
+    </select>
+
+<!--    同上，验证病人账户-->
+    <select id="checkPatientAccount" resultType="int">
+        SELECT DISTINCT IF(EXISTS(SELECT 1 FROM patient_account where phoneNo=#{phone} and password =#{password}),1,0) AS a FROM patient_account
+    </select>
+
+<!--    同上，验证医生账户-->
+    <select id="checkDoctorAccount" resultType="int">
+        SELECT DISTINCT IF(EXISTS(SELECT 1 FROM doc_account where phoneNo=#{phone} and password =#{password}),1,0) AS a FROM doc_account
+    </select>
+</mapper>
