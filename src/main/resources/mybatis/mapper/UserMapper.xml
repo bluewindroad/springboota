@@ -81,4 +81,30 @@ select * from admin_account where accountID=#{accountID}
     <select id="checkDoctorAccount" resultType="int">
         SELECT DISTINCT IF(EXISTS(SELECT 1 FROM doc_account where phoneNo=#{phone} and password =#{password}),1,0) AS a FROM doc_account
     </select>
+
+<!--    验证管理员账户手机号-->
+    <select id="checkAdminPhone" resultType="int">
+         SELECT DISTINCT IF(EXISTS(SELECT 1 FROM admin_account where phoneNo=#{phone}),1,0) AS a FROM admin_account
+    </select>
+
+<!--    同上，验证医生手机号-->
+    <select id="checkDoctorAccountPhone">
+         SELECT DISTINCT IF(EXISTS(SELECT 1 FROM doc_account where phoneNo=#{phone}),1,0) AS a FROM doc_account
+    </select>
+
+<!--    同上,验证病人手机号-->
+    <select id="checkPatientAccountPhone" resultType="int">
+         SELECT DISTINCT IF(EXISTS(SELECT 1 FROM patient_account where phoneNo=#{phone}),1,0) AS a FROM patient_account
+    </select>
+
+<!--    获取所有病人账号-->
+    <select id="getAllPatientAccount" resultType="java.util.Map">
+        select paccountNo as num, userName as name,phoneNo as tel,"病患" as tag from patient_account
+    </select>
+
+<!--    获取所有医生账号-->
+    <select id="getAllDocAccount" resultType="java.util.Map">
+        select daccountNo as num,userName as name,phoneNo as tel,"医师" as tag from  doc_account
+    </select>
+
 </mapper>

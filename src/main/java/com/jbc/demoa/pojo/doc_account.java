@@ -19,4 +19,10 @@ public class doc_account {
         this.password = password;
         this.phoneNo = phoneNo;
     }
+
+    public doc_account(int daccountNo, String userName, String phoneNo) {
+        this.daccountNo = daccountNo;
+        this.userName = userName;
+        this.phoneNo = phoneNo;
+    }
 }
