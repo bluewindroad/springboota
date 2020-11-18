@@ -88,7 +88,7 @@ select * from admin_account where accountID=#{accountID}
     </select>
 
 <!--    同上，验证医生手机号-->
-    <select id="checkDoctorAccountPhone">
+    <select id="checkDoctorAccountPhone" resultType="int">
          SELECT DISTINCT IF(EXISTS(SELECT 1 FROM doc_account where phoneNo=#{phone}),1,0) AS a FROM doc_account
     </select>
 
@@ -107,4 +107,15 @@ select * from admin_account where accountID=#{accountID}
         select daccountNo as num,userName as name,phoneNo as tel,"医师" as tag from  doc_account
     </select>
 
+<!--    通过手机号查询医生的详细信息-->
+    <select id="getDocDetailInformationByPhone" resultType="java.util.Map" parameterType="String">
+        select * from doctor where phoneNo=#{phone}
+    </select>
+
+<!--    通过手机号查询病人详细信息-->
+    <select id="getPatientDetailInformationByPhone" resultType="java.util.Map" parameterType="String" >
+        select * from patient  where phoneNo=#{phone}
+    </select>
+
+    
 </mapper>

@@ -58,5 +58,7 @@ public interface UserMapper {
 
     List<Map<Object,Object>>   getAllDocAccount();    //获取所有医生账号
 
+    Map<Object,Object>getDocDetailInformationByPhone(@Param("phone") String phone);  //通关医生手机号查询医生详细信息
 
+    Map<Object,Object>getPatientDetailInformationByPhone(@Param("phone") String phone);
 }

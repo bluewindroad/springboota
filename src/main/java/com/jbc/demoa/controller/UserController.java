@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +17,7 @@ public class UserController {
     private UserMapper userMapper;
 
     @CrossOrigin
-    @GetMapping("/getAdmin")
+    @GetMapping("/getAdmin")  //测试，获取管理员列表
     public List<admin_account> getAllAdminList() {
         List<admin_account> admin_accounts = userMapper.getAllAdminList();
         for (admin_account adminAccount : admin_accounts) {
@@ -27,14 +28,29 @@ public class UserController {
     }
 
     @CrossOrigin
-    @GetMapping("/getAllDocAndPatient")
-    public List<Map<Object,Object>> getAllDocAndPatient() {
-        List<Map<Object,Object>>mapList=new ArrayList<>();
+    @GetMapping("/getAllDocAndPatient")  //获取所有医生和病人账号列表
+    public List<Map<Object, Object>> getAllDocAndPatient() {
+        List<Map<Object, Object>> mapList = new ArrayList<>();
         mapList.addAll(userMapper.getAllDocAccount());
         mapList.addAll(userMapper.getAllPatientAccount());
         return mapList;
     }
 
+    @CrossOrigin
+    //获取医生或病人详细信息
+    @RequestMapping(value = "/getInformationDocOrPatient", method = RequestMethod.POST, consumes = "application/json")
+    public Map<Object, Object> getInformationDocOrPatient(@RequestBody String jsonParamStr) {
+        Map<Object, Object> map = new HashMap<Object, Object>();
+        JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
+        String phone = jsonObject.getString("phone");
+        String tag = jsonObject.getString("tag");
+        if (tag.equals("病患")) {
+            map = userMapper.getPatientDetailInformationByPhone(phone);
+        } else if (tag.equals("医师")) {
+            map = userMapper.getDocDetailInformationByPhone(phone);
+        }
+        return map;
+    }
 
     @CrossOrigin
     @RequestMapping(value = "/addUser", method = RequestMethod.POST, consumes = "application/json")
@@ -48,14 +64,14 @@ public class UserController {
         int value = Integer.parseInt(jsonObject.getString("value"));
         switch (value) {
             case 1:  //管理员
-                if (userMapper.checkAdminPhone(phone) == 0) {
+                if (userMapper.checkAdminPhone(phone) == 1) {
                     return "手机号已被注册!";
                 }
                 userMapper.addAdmin(new admin_account(username, password, phone));
                 isRegister = true;
                 break;
             case 2:   //医生
-                if (userMapper.checkDoctorAccountPhone(phone) == 0) {
+                if (userMapper.checkDoctorAccountPhone(phone) == 1) {
                     return "手机号已被注册!";
                 }
                 userMapper.addDocAccount(new doc_account(username, password, phone));
@@ -64,7 +80,7 @@ public class UserController {
                 isRegister = true;
                 break;
             case 3: //病人
-                if (userMapper.checkPatientAccountPhone(phone) == 0) {
+                if (userMapper.checkPatientAccountPhone(phone) == 1) {
                     return "手机号已被注册!";
                 }
                 userMapper.addPatientAccount(new patient_account(username, password, phone));
