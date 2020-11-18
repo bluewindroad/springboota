@@ -36,6 +36,24 @@ public class UserController {
         return mapList;
     }
 
+    @CrossOrigin  //删除医生或者病人
+    @RequestMapping(value = "/deleteDocOrPatient", method = RequestMethod.POST, consumes = "application/json")
+    public Boolean deleteDocOrPatient(@RequestBody String jsonParamStr){
+        JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
+        String phone = jsonObject.getString("phone");
+        String tag = jsonObject.getString("tag");
+        if (tag.equals("病患")) {
+            userMapper.deletePatientAccountByPhone(phone);
+            userMapper.deletePatientByPhone(phone);
+            return true;
+        } else if (tag.equals("医师")) {
+            userMapper.deleteDocAccountByPhone(phone);
+            userMapper.deleteDocByPhone(phone);
+            return true;
+        }
+        return false;
+    }
+
     @CrossOrigin
     //获取医生或病人详细信息
     @RequestMapping(value = "/getInformationDocOrPatient", method = RequestMethod.POST, consumes = "application/json")

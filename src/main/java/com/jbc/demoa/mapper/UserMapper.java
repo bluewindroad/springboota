@@ -60,5 +60,16 @@ public interface UserMapper {
 
     Map<Object,Object>getDocDetailInformationByPhone(@Param("phone") String phone);  //通关医生手机号查询医生详细信息
 
-    Map<Object,Object>getPatientDetailInformationByPhone(@Param("phone") String phone);
+    Map<Object,Object>getPatientDetailInformationByPhone(@Param("phone") String phone); //通过病人手机号查询病人详细信息
+
+//    接下来多条是删除病人或者医生，目前只有4条
+    void deleteDocByPhone(@Param("phone") String phone);  //通过医生手机号删除医生
+
+    void  deleteDocAccountByPhone(@Param("phone") String phone);  //通过医生手机号删除医生账户
+
+    void deletePatientByPhone(@Param("phone") String phone);  //通过病人手机号删除病人
+
+    void deletePatientAccountByPhone(@Param("phone") String phone);  //通过病人手机号删除病人账户
+//    上述是删除病人或者医生
+
 }

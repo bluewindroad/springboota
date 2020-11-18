@@ -117,5 +117,27 @@ select * from admin_account where accountID=#{accountID}
         select * from patient  where phoneNo=#{phone}
     </select>
 
+<!--    接下来多条是删除病人或医生-->
+
+<!--    删除医生-->
+    <delete id="deleteDocByPhone">
+        delete from  doctor where phoneNo=#{phone}
+    </delete>
+
+<!--    删除医生账户-->
+    <delete id="deleteDocAccountByPhone">
+        delete from doc_account where phoneNo=#{phone}
+    </delete>
+
+<!--    删除病人-->
+    <delete id="deletePatientByPhone">
+        delete  from patient where phoneNo=#{phone}
+    </delete>
+
+<!--    删除病人账户-->
+    <delete id="deletePatientAccountByPhone">
+        delete from patient_account where phoneNo=#{phone}
+    </delete>
+<!--    上述多条为删除-->
     
 </mapper>
