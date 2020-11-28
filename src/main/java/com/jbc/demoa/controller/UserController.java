@@ -1,15 +1,14 @@
 package com.jbc.demoa.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.jbc.demoa.mapper.UserMapper;
 import com.jbc.demoa.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @RestController
 public class UserController {
@@ -131,13 +130,13 @@ public class UserController {
                     isLogin = true;
                 }
                 break;
-            case 2:   //医生
+            case 3:   //医生
                 check = userMapper.checkDoctorAccount(phone, password);
                 if (check == 1) {
                     isLogin = true;
                 }
                 break;
-            case 3:  //病人
+            case 2:  //病人
                 check = userMapper.checkPatientAccount(phone, password);
                 if (check == 1) {
                     isLogin = true;
@@ -147,5 +146,91 @@ public class UserController {
                 break;
         }
         return isLogin;
+    }
+
+//    之后是病人界面
+    @CrossOrigin
+    @GetMapping("/getAllDoc")  //获取所有医生账号列表
+    public List<Map<Object, Object>> getAllDoc() {
+        return new ArrayList<>(userMapper.getAllDoc());
+    }
+
+
+//  添加医师和开放所有权限
+    @CrossOrigin
+    @RequestMapping(value = "/addDoctorAndPermission", method = RequestMethod.POST, consumes = "application/json")
+    public String addDoctorAndPermission(@RequestBody String jsonParamStr){
+        JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
+        String PatientPhone=jsonObject.getString("PatientPhone");
+        JSONArray Doctor = jsonObject.getJSONArray("Doctor");
+        for (int i = 0; i < Doctor.size(); i++) {
+            String DoctorPhone= (String) Doctor.getJSONObject(i).get("tel");
+            int DoctorId=userMapper.getDoctorIdByPhone(DoctorPhone);
+            int PatientId=userMapper.getPatientIdByPhone(PatientPhone);
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
+            userMapper.insertRelationship(PatientId,DoctorId,df.format(new Date()).toString());
+            userMapper.insertRestriction(PatientId,DoctorId);
+        }
+
+
+        return "true";
+    }
+
+    //获取病人选择的医生的列表
+    @CrossOrigin
+    @RequestMapping(value = "/getRelationship", method = RequestMethod.POST, consumes = "application/json")
+    public List<Object>getRelationship(@RequestBody String jsonParamStr){
+        JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
+        String PatientPhone=jsonObject.getString("PatientPhone");
+        int PatientId=userMapper.getPatientIdByPhone(PatientPhone);
+        List<Map<Object, Object>> mapList =new ArrayList<>();
+        List<Object>DocList=new ArrayList<>();
+        mapList=userMapper.getRelationshipByPatientId(PatientId);
+        for (Map<Object, Object> objectObjectMap : mapList) {
+            int DocoterId = (int) objectObjectMap.get("doctorID");
+            DocList.add(userMapper.getDocListByDocId(DocoterId));
+        }
+        return DocList;
+
+    }
+
+    //修改病人选择的医生的权限
+    @CrossOrigin
+    @RequestMapping(value = "/updateRelationship", method = RequestMethod.POST, consumes = "application/json")
+    public String updateRelationship(@RequestBody String jsonParamStr){
+        JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
+        String PatientPhone=jsonObject.getString("PatientPhone");
+        int PatientId=userMapper.getPatientIdByPhone(PatientPhone);
+        String DoctorPhone=jsonObject.getString("DoctorPhone");
+        int DoctorId=userMapper.getDoctorIdByPhone(DoctorPhone);
+        JSONArray checkList = jsonObject.getJSONArray("checkList");
+        switch (checkList.size()){
+            case 0:
+                userMapper.updateRelationshipByPatientId(PatientId,DoctorId,0,0);
+                break;
+            case 1:
+                if (checkList.get(0).equals("口腔科")){
+                    userMapper.updateRelationshipByPatientId(PatientId,DoctorId,0,1);
+                }
+                if (checkList.get(0).equals("血液科")){
+                    userMapper.updateRelationshipByPatientId(PatientId,DoctorId,1,0);
+                }
+                break;
+        }
+        return "true";
+    }
+
+    //删除病人所选择的医生
+    @CrossOrigin
+    @RequestMapping(value = "/deleteRelationship", method = RequestMethod.POST, consumes = "application/json")
+    public String deleteRelationship(@RequestBody String jsonParamStr){
+        JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
+        String PatientPhone=jsonObject.getString("PatientPhone");
+        int PatientId=userMapper.getPatientIdByPhone(PatientPhone);
+        String DoctorPhone=jsonObject.getString("DoctorPhone");
+        int DoctorId=userMapper.getDoctorIdByPhone(DoctorPhone);
+        userMapper.deleteRelationshipByPatientId(PatientId,DoctorId);
+        userMapper.deleteRestrictionByPatientId(PatientId,DoctorId);
+        return "true";
     }
 }

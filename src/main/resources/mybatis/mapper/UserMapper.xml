@@ -57,6 +57,11 @@ select * from admin_account where accountID=#{accountID}
         select patientID from patient where phoneNo = #{phone}
     </select>
 
+<!--    通过电话查询医生id-->
+    <select id="getDoctorIdByPhone" resultType="int">
+        select doctorID from doctor where phoneNo = #{phone}
+    </select>
+
 <!--    向病人账户中添加病人id-->
     <update id="updatePatientAccountPatientIdByPhone" >
         update patient_account set patientID = #{patientId} where phoneNo=#{phone}
@@ -139,5 +144,51 @@ select * from admin_account where accountID=#{accountID}
         delete from patient_account where phoneNo=#{phone}
     </delete>
 <!--    上述多条为删除-->
-    
+
+<!--    选出所有医生，用于病人选择-->
+    <select id="getAllDoc" resultType="java.util.Map">
+        select a.daccountNo as num,a.doctorName as name,d.departmentName as tag,a.phoneNo as tel,"未选" as choose
+        from  doctor a ,department d
+        where a.departmentNo = d.departmentNo
+    </select>
+
+<!--    添加关系-->
+    <insert id="insertRelationship">
+        insert into doctor_patient_relationship values (#{PatientID},#{DoctorID},#{date})
+    </insert>
+
+<!--    添加权限-->
+    <insert id="insertRestriction">
+        insert into restriction (patientID,doctorID)values(#{PatientID},#{DoctorID})
+    </insert>
+
+<!--    通过病人编号查询其选择的医生-->
+    <select id="getRelationshipByPatientId" resultType="java.util.Map">
+        select doctorID from  doctor_patient_relationship where patientID =#{PatientID}
+    </select>
+
+<!--    通过医生编号返回病人选择的医生-->
+    <select id="getDocListByDocId" resultType="java.util.Map">
+        select a.daccountNo as num,a.doctorName as name,d.departmentName as tag,a.phoneNo as tel
+        from  doctor a ,department d
+        where a.departmentNo = d.departmentNo and a.doctorID = #{DoctorID}
+    </select>
+
+<!--    通过编号修改医生对病人的权限-->
+    <update id="updateRelationshipByPatientId">
+        update restriction set blood_grant=#{blood} ,tooth_grant=#{tooth}
+        where patientID=#{PatientID} and doctorID=#{DoctorID}
+    </update>
+
+<!--    通过编号删除病人选择的医生-->
+    <delete id="deleteRelationshipByPatientId">
+        delete from doctor_patient_relationship
+        where patientID=#{PatientID} and doctorID=#{DoctorID}
+    </delete>
+
+<!--    通过编号删除病人选择医生的权限-->
+    <delete id="deleteRestrictionByPatientId">
+        delete from restriction
+        where patientID=#{PatientID} and doctorID=#{DoctorID}
+    </delete>
 </mapper>

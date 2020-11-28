@@ -23,6 +23,8 @@ public interface UserMapper {
 
     int getDocIdByPhoneNo(String phone);   //通过手机号查询医生账户的NO
 
+    int getDoctorIdByPhone(@Param("phone")String phone);  //通过手机号查询医生id
+
     void addDocBase(doctor doctor); //增加医生个人信息
 
     doctor getDocByPhone(String phone);  //通过电话查询医生个人信息
@@ -58,6 +60,9 @@ public interface UserMapper {
 
     List<Map<Object,Object>>   getAllDocAccount();    //获取所有医生账号
 
+    List<Map<Object,Object>>   getAllDoc();    //获取所有医生,用于病人选择医生
+//
+
     Map<Object,Object>getDocDetailInformationByPhone(@Param("phone") String phone);  //通关医生手机号查询医生详细信息
 
     Map<Object,Object>getPatientDetailInformationByPhone(@Param("phone") String phone); //通过病人手机号查询病人详细信息
@@ -72,4 +77,24 @@ public interface UserMapper {
     void deletePatientAccountByPhone(@Param("phone") String phone);  //通过病人手机号删除病人账户
 //    上述是删除病人或者医生
 
+
+//    医生与病人关系表
+    //添加关系
+    void insertRelationship(@Param("PatientID")int PatientID,@Param("DoctorID")int DoctorID,@Param("date")String date);
+
+    void insertRestriction(@Param("PatientID")int PatientID,@Param("DoctorID")int DoctorID);//添加权限，默认全1
+
+    List<Map<Object,Object>>getRelationshipByPatientId(@Param("PatientID")int PatientID);  //通过病人编号查询其选择的病人
+
+    Map<Object,Object>getDocListByDocId(@Param("DoctorID")int DoctorID);  //通过医生id返回医生列表
+
+    //修改关系
+    void updateRelationshipByPatientId(@Param("PatientID")int PatientID,@Param("DoctorID")int DoctorID,
+                                       @Param("blood")int blood, @Param("tooth")int tooth);
+
+    //删除关系
+    void deleteRelationshipByPatientId(@Param("PatientID")int PatientID,@Param("DoctorID")int DoctorID);
+
+    //通过编号删除病人选择医生的权限
+    void deleteRestrictionByPatientId(@Param("PatientID")int PatientID,@Param("DoctorID")int DoctorID);
 }
