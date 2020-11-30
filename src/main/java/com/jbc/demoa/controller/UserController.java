@@ -233,4 +233,27 @@ public class UserController {
         userMapper.deleteRestrictionByPatientId(PatientId,DoctorId);
         return "true";
     }
+
+
+    //查询数据
+    @CrossOrigin
+    @RequestMapping(value = "/selectPatientCase", method = RequestMethod.POST, consumes = "application/json; charset=UTF-8")
+    public String selectPatientCase(@RequestBody String jsonParamStr){
+
+        JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
+        JSONArray value = jsonObject.getJSONArray("value");
+        System.out.println(jsonObject);
+        return "1";
+    }
+
+
+//    医生
+    //医生个人界面
+    @CrossOrigin
+    @RequestMapping(value = "/getDocDetail", method = RequestMethod.POST, consumes = "application/json; charset=UTF-8")
+    public Map<Object,Object>getDocDetail(@RequestBody String jsonParamStr){
+        JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
+        String DoctorPhone=jsonObject.getString("DoctorPhone");
+        return userMapper.getDocDetailInformationByPhone(DoctorPhone);
+    }
 }

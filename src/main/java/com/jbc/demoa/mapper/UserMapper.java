@@ -97,4 +97,7 @@ public interface UserMapper {
 
     //通过编号删除病人选择医生的权限
     void deleteRestrictionByPatientId(@Param("PatientID")int PatientID,@Param("DoctorID")int DoctorID);
+
+
+    //通过医生手机号查询医生详细信息
 }
