@@ -106,8 +106,10 @@ public class jsonHelper {
     {
         //��ϵͳ�еı�ת��Ϊjson�ļ�
         JSONObject jo=new JSONObject();
-        if(((bloodTable)ft).m_type=="bloodTable")return BtalbeToJson((bloodTable) ft);
-        if(((toothTable)ft).m_type=="toothTable")return TtalbeToJson((toothTable) ft);
+        if(ft.getM_type().equals("bloodTable"))return BtalbeToJson((bloodTable) ft);
+        if(ft.getM_type().equals("toothTable"))return TtalbeToJson((toothTable) ft);
+      //  if(((bloodTable)ft).m_type=="bloodTable")return BtalbeToJson((bloodTable) ft);
+       // if(((toothTable)ft).m_type=="toothTable")return TtalbeToJson((toothTable) ft);
         return jo;
     }
 

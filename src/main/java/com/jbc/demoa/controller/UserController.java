@@ -3,13 +3,15 @@ package com.jbc.demoa.controller;
 import com.DBH;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.gson.JsonObject;
 import com.jbc.demoa.mapper.UserMapper;
 import com.jbc.demoa.pojo.*;
 import com.jsonHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -40,7 +42,7 @@ public class UserController {
 
     @CrossOrigin  //删除医生或者病人
     @RequestMapping(value = "/deleteDocOrPatient", method = RequestMethod.POST, consumes = "application/json")
-    public Boolean deleteDocOrPatient(@RequestBody String jsonParamStr){
+    public Boolean deleteDocOrPatient(@RequestBody String jsonParamStr) {
         JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
         String phone = jsonObject.getString("phone");
         String tag = jsonObject.getString("tag");
@@ -151,7 +153,7 @@ public class UserController {
         return isLogin;
     }
 
-//    之后是病人界面
+    //    之后是病人界面
     @CrossOrigin
     @GetMapping("/getAllDoc")  //获取所有医生账号列表
     public List<Map<Object, Object>> getAllDoc() {
@@ -159,20 +161,20 @@ public class UserController {
     }
 
 
-//  添加医师和开放所有权限
+    //  添加医师和开放所有权限
     @CrossOrigin
     @RequestMapping(value = "/addDoctorAndPermission", method = RequestMethod.POST, consumes = "application/json")
-    public String addDoctorAndPermission(@RequestBody String jsonParamStr){
+    public String addDoctorAndPermission(@RequestBody String jsonParamStr) {
         JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
-        String PatientPhone=jsonObject.getString("PatientPhone");
+        String PatientPhone = jsonObject.getString("PatientPhone");
         JSONArray Doctor = jsonObject.getJSONArray("Doctor");
         for (int i = 0; i < Doctor.size(); i++) {
-            String DoctorPhone= (String) Doctor.getJSONObject(i).get("tel");
-            int DoctorId=userMapper.getDoctorIdByPhone(DoctorPhone);
-            int PatientId=userMapper.getPatientIdByPhone(PatientPhone);
+            String DoctorPhone = (String) Doctor.getJSONObject(i).get("tel");
+            int DoctorId = userMapper.getDoctorIdByPhone(DoctorPhone);
+            int PatientId = userMapper.getPatientIdByPhone(PatientPhone);
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");//设置日期格式
-            userMapper.insertRelationship(PatientId,DoctorId,df.format(new Date()).toString());
-            userMapper.insertRestriction(PatientId,DoctorId);
+            userMapper.insertRelationship(PatientId, DoctorId, df.format(new Date()).toString());
+            userMapper.insertRestriction(PatientId, DoctorId);
         }
 
 
@@ -182,13 +184,13 @@ public class UserController {
     //获取病人选择的医生的列表
     @CrossOrigin
     @RequestMapping(value = "/getRelationship", method = RequestMethod.POST, consumes = "application/json")
-    public List<Object>getRelationship(@RequestBody String jsonParamStr){
+    public List<Object> getRelationship(@RequestBody String jsonParamStr) {
         JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
-        String PatientPhone=jsonObject.getString("PatientPhone");
-        int PatientId=userMapper.getPatientIdByPhone(PatientPhone);
-        List<Map<Object, Object>> mapList =new ArrayList<>();
-        List<Object>DocList=new ArrayList<>();
-        mapList=userMapper.getRelationshipByPatientId(PatientId);
+        String PatientPhone = jsonObject.getString("PatientPhone");
+        int PatientId = userMapper.getPatientIdByPhone(PatientPhone);
+        List<Map<Object, Object>> mapList = new ArrayList<>();
+        List<Object> DocList = new ArrayList<>();
+        mapList = userMapper.getRelationshipByPatientId(PatientId);
         for (Map<Object, Object> objectObjectMap : mapList) {
             int DocoterId = (int) objectObjectMap.get("doctorID");
             DocList.add(userMapper.getDocListByDocId(DocoterId));
@@ -200,23 +202,23 @@ public class UserController {
     //修改病人选择的医生的权限
     @CrossOrigin
     @RequestMapping(value = "/updateRelationship", method = RequestMethod.POST, consumes = "application/json")
-    public String updateRelationship(@RequestBody String jsonParamStr){
+    public String updateRelationship(@RequestBody String jsonParamStr) {
         JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
-        String PatientPhone=jsonObject.getString("PatientPhone");
-        int PatientId=userMapper.getPatientIdByPhone(PatientPhone);
-        String DoctorPhone=jsonObject.getString("DoctorPhone");
-        int DoctorId=userMapper.getDoctorIdByPhone(DoctorPhone);
+        String PatientPhone = jsonObject.getString("PatientPhone");
+        int PatientId = userMapper.getPatientIdByPhone(PatientPhone);
+        String DoctorPhone = jsonObject.getString("DoctorPhone");
+        int DoctorId = userMapper.getDoctorIdByPhone(DoctorPhone);
         JSONArray checkList = jsonObject.getJSONArray("checkList");
-        switch (checkList.size()){
+        switch (checkList.size()) {
             case 0:
-                userMapper.updateRelationshipByPatientId(PatientId,DoctorId,0,0);
+                userMapper.updateRelationshipByPatientId(PatientId, DoctorId, 0, 0);
                 break;
             case 1:
-                if (checkList.get(0).equals("口腔科")){
-                    userMapper.updateRelationshipByPatientId(PatientId,DoctorId,0,1);
+                if (checkList.get(0).equals("口腔科")) {
+                    userMapper.updateRelationshipByPatientId(PatientId, DoctorId, 0, 1);
                 }
-                if (checkList.get(0).equals("血液科")){
-                    userMapper.updateRelationshipByPatientId(PatientId,DoctorId,1,0);
+                if (checkList.get(0).equals("血液科")) {
+                    userMapper.updateRelationshipByPatientId(PatientId, DoctorId, 1, 0);
                 }
                 break;
         }
@@ -226,14 +228,14 @@ public class UserController {
     //删除病人所选择的医生
     @CrossOrigin
     @RequestMapping(value = "/deleteRelationship", method = RequestMethod.POST, consumes = "application/json")
-    public String deleteRelationship(@RequestBody String jsonParamStr){
+    public String deleteRelationship(@RequestBody String jsonParamStr) {
         JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
-        String PatientPhone=jsonObject.getString("PatientPhone");
-        int PatientId=userMapper.getPatientIdByPhone(PatientPhone);
-        String DoctorPhone=jsonObject.getString("DoctorPhone");
-        int DoctorId=userMapper.getDoctorIdByPhone(DoctorPhone);
-        userMapper.deleteRelationshipByPatientId(PatientId,DoctorId);
-        userMapper.deleteRestrictionByPatientId(PatientId,DoctorId);
+        String PatientPhone = jsonObject.getString("PatientPhone");
+        int PatientId = userMapper.getPatientIdByPhone(PatientPhone);
+        String DoctorPhone = jsonObject.getString("DoctorPhone");
+        int DoctorId = userMapper.getDoctorIdByPhone(DoctorPhone);
+        userMapper.deleteRelationshipByPatientId(PatientId, DoctorId);
+        userMapper.deleteRestrictionByPatientId(PatientId, DoctorId);
         return "true";
     }
 
@@ -241,60 +243,154 @@ public class UserController {
     //查询数据
     @CrossOrigin
     @RequestMapping(value = "/selectPatientCase", method = RequestMethod.POST, consumes = "application/json; charset=UTF-8")
-    public List<JSONObject>  selectPatientCase(@RequestBody String jsonParamStr){
+    public List<JSONObject> selectPatientCase(@RequestBody String jsonParamStr) {
 
         JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
         JSONArray value = jsonObject.getJSONArray("value");
 //        System.out.println(jsonObject);
-        int PatientId=userMapper.getPatientIdByPhone(jsonObject.getString("phone"));
-        jsonObject.put("patientId",PatientId);
+        int PatientId = userMapper.getPatientIdByPhone(jsonObject.getString("phone"));
+        jsonObject.put("patientId", PatientId);
         return DBH.search(jsonHelper.JsonToJson(jsonObject));
     }
 
+    //病人个人数据
+    @CrossOrigin
+    @RequestMapping(value = "/updatePatientDetail", method = RequestMethod.POST, consumes = "application/json; charset=UTF-8")
+    public String updatePatientDetail(@RequestBody String jsonParamStr) {
+        JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
+        Map<String, Object> map = new HashMap<>();
+        String PatientPhone = jsonObject.getString("phoneNo");
+        String sex = jsonObject.getString("sex");
+        if (sex.length() == 2) {
+            if (sex.equals("男性")) {
+                map.put("sex", "f");
+            } else if (sex.equals("女性")) {
+                map.put("sex", "m");
+            }
+        } else {
+            map.put("sex", jsonObject.getString("sex"));
+        }
+        map.put("birthday", jsonObject.getString("birthday").substring(0, 10));
+        map.put("phoneNo", PatientPhone);
+        userMapper.updatePatientDetail(map);
+//        System.out.println(map.toString());
 
-//    医生
+        return "修改成功";
+    }
+
+    //获得病人详细信息
+    @CrossOrigin
+    @RequestMapping(value = "/getPatientDetail", method = RequestMethod.POST, consumes = "application/json")
+    public Map<Object, Object> getPatientDetail(@RequestBody String jsonParamStr) {
+        JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
+        String PatientPhone = jsonObject.getString("phone");
+        return userMapper.getPatientDetailInformationByPhone(PatientPhone);
+    }
+
+    //    医生
     //医生个人界面
     @CrossOrigin
     @RequestMapping(value = "/getDocDetail", method = RequestMethod.POST, consumes = "application/json; charset=UTF-8")
-    public Map<Object,Object>getDocDetail(@RequestBody String jsonParamStr){
+    public Map<Object, Object> getDocDetail(@RequestBody String jsonParamStr) {
         JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
-        String DoctorPhone=jsonObject.getString("DoctorPhone");
+        String DoctorPhone = jsonObject.getString("DoctorPhone");
         return userMapper.getDocDetailInformationByPhone(DoctorPhone);
     }
 
     //修改医生个人信息
     @CrossOrigin
     @RequestMapping(value = "/updateDocDetail", method = RequestMethod.POST, consumes = "application/json; charset=UTF-8")
-    public String updateDocDetail(@RequestBody String jsonParamStr){
+    public String updateDocDetail(@RequestBody String jsonParamStr) {
         JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
-        Map<String,Object>map=new HashMap<>();
-        String DoctorPhone=jsonObject.getString("DoctorPhone");
-        String sex=jsonObject.getString("sex");
-        if (sex.length()==2){
-            if (sex.equals("男性")){
-                map.put("sex","f");
-            }else if (sex.equals("女性")){
-                map.put("sex","m");
+        Map<String, Object> map = new HashMap<>();
+        String DoctorPhone = jsonObject.getString("DoctorPhone");
+        String sex = jsonObject.getString("sex");
+        if (sex.length() == 2) {
+            if (sex.equals("男性")) {
+                map.put("sex", "f");
+            } else if (sex.equals("女性")) {
+                map.put("sex", "m");
             }
-        }else {
-            map.put("sex",jsonObject.getString("sex"));
+        } else {
+            map.put("sex", jsonObject.getString("sex"));
         }
-        map.put("phoneNo",DoctorPhone);
-        map.put("birthday",jsonObject.getString("birthday").substring(0,10));
-        map.put("nationality",jsonObject.getString("nationality"));
-        map.put("nation",jsonObject.getString("nation"));
-        map.put("college",jsonObject.getString("college"));
-        map.put("address",jsonObject.getString("address"));
-        map.put("expertise",jsonObject.getString("expertise"));
-        map.put("works",jsonObject.getString("works"));
-        map.put("introduction",jsonObject.getString("introduction"));
-        map.put("achievements",jsonObject.getString("achievements"));
-        map.put("evaluation",jsonObject.getString("evaluation"));
-        map.put("nativePlace",jsonObject.getString("nativePlace"));
+        map.put("phoneNo", DoctorPhone);
+        map.put("birthday", jsonObject.getString("birthday").substring(0, 10));
+        map.put("nationality", jsonObject.getString("nationality"));
+        map.put("nation", jsonObject.getString("nation"));
+        map.put("college", jsonObject.getString("college"));
+        map.put("address", jsonObject.getString("address"));
+        map.put("expertise", jsonObject.getString("expertise"));
+        map.put("works", jsonObject.getString("works"));
+        map.put("introduction", jsonObject.getString("introduction"));
+        map.put("achievements", jsonObject.getString("achievements"));
+        map.put("evaluation", jsonObject.getString("evaluation"));
+        map.put("nativePlace", jsonObject.getString("nativePlace"));
 //        System.out.println("birthday:"+jsonObject.getString("birthday").substring(0,10));
-        System.out.println("长度:"+jsonObject.getString("sex").length());
+        System.out.println("长度:" + jsonObject.getString("sex").length());
         userMapper.updateDocDetail(map);
-
         return "修改成功!";
+    }
+
+
+    //通过医生手机号查询病人列表
+    @CrossOrigin
+    @RequestMapping(value = "/getDocsPatient", method = RequestMethod.POST, consumes = "application/json")
+    List<Map<Object, Object>> getDocsPatient(@RequestBody String jsonParamStr) {
+        JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
+        String DoctorPhone = jsonObject.getString("DoctorPhone");
+        int DoctorID = userMapper.getDoctorIdByPhone(DoctorPhone);
+        List<Map<Object, Object>> mapList = userMapper.getDocsPatient(DoctorID);
+        for (Map<Object, Object> maps : mapList) {
+            if (maps.get("sex").equals("m")) {
+                maps.put("sex", "女性");
+            } else if (maps.get("sex").equals("f")) {
+                maps.put("sex", "男性");
+            }
+        }
+        return mapList;
+    }
+
+
+    //通过医生id查看其管理病人的所有体检单
+    @CrossOrigin
+    @RequestMapping(value = "/getDocsPatientsRecord", method = RequestMethod.POST, consumes = "application/json")
+    List<Map<Object, Object>> getDocsPatientsRecord(@RequestBody String jsonParamStr) {
+        JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
+        String doctorPhone = jsonObject.getString("doctorPhone");
+        int DoctorID = userMapper.getDoctorIdByPhone(doctorPhone);
+        String patientPhone = jsonObject.getString("patientPhone");
+        int PatientId = userMapper.getPatientIdByPhone(patientPhone);
+        return userMapper.getDocsPatientsRecord(PatientId, DoctorID);
+    }
+
+
+    //根据体检单号获取病人病例
+    @CrossOrigin
+    @RequestMapping(value = "/getDocsPatientsRecordDetail", method = RequestMethod.POST, consumes = "application/json")
+    public JSONObject getDocsPatientsRecordDetail(@RequestBody String jsonParamStr) {
+        JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
+        String office = jsonObject.getString("office");
+        if (office.equals("血液科")) {
+            office = "bloodTable";
+        } else if (office.equals("口腔科")) {
+            office = "toothTable";
+        }
+        return DBH.searchByNo(jsonObject.getInteger("tableID"), office);
+    }
+
+    @CrossOrigin
+    @RequestMapping("/uploadFile")
+
+    public String uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            return "上传失败，请选择文件";
+        }
+        String fileName = file.getOriginalFilename();
+        String fileName1 = fileName.split("\\.")[1];
+        String filePath = "C:\\Users\\78240\\Desktop\\" + "." + fileName1;
+        File dest = new File(filePath);
+        file.transferTo(dest);
+        return "." + fileName1;
     }
 }

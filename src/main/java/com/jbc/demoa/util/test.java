@@ -16,7 +16,7 @@ public class test {
         bloodTable bt=new bloodTable();
        // String s=AES.encrypt(2.0);
        // System.out.println(AES.decrypt(s));
-        Vector<fatherTable> ftV= csv.csvRead("C:\\Users\\78240\\Desktop\\test.csv","ѪҺ��");
+        Vector<fatherTable> ftV= csv.csvRead("C:\\Users\\78240\\Desktop\\csv\\testblood.csv","bloodTable");
         //  bloodTable bt=new bloodTable();
      //  System.out.println(1111);
         //System.out.println(DBH.search(jsonHelper.TestJson()));

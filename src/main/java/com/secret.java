@@ -7,7 +7,7 @@ import com.table.toothTable;
 import java.util.Vector;
 
 public class secret {
-    //¹«ÓÃÃÜÂë
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     SecretKey sk=Gen.GenKey(64);
     public static SecretKey getKey(){
         FileHelper fi=new FileHelper("E:\\programming\\java\\demoa\\src\\secretKey");
@@ -23,11 +23,11 @@ public class secret {
     public static splitedMatrix getSecureDataIndex(double data) {
         splitedMatrix secureDataIndex = null;
         SecretKey sk=getKey();//= Gen.GenKey(64);
-        // Éú³ÉÃ÷ÎÄË÷Òý
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         IndexEncrypty indexEncrypty = new IndexEncrypty();
         double[] index = indexEncrypty.BuildIndexVector(data, sk);
 
-        // Ë÷Òý¼ÓÃÜ
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         splitedMatrix splitedMatrix = indexEncrypty.splitIndexVector(index, sk);
         secureDataIndex = indexEncrypty.EncIndexVector(splitedMatrix, sk);
 
@@ -35,21 +35,21 @@ public class secret {
     }
 
     /**
-     * »ñÈ¡°²È«²éÑ¯Ë÷Òý
+     * ï¿½ï¿½È¡ï¿½ï¿½È«ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½
      *
-     * @param data ²éÑ¯±ß½çÖµ
+     * @param data ï¿½ï¿½Ñ¯ï¿½ß½ï¿½Öµ
      *
-     * @return ÃÜÔ¿
+     * @return ï¿½ï¿½Ô¿
      */
     public static splitedMatrix getSecureQueryIndex(double data) {
         splitedMatrix secureQueryIndex = null;
 
         SecretKey sk=getKey(); //Gen.GenKey(64);
-        // Éú³ÉÃ÷ÎÄË÷Òý
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         QueryEncrypty queryEncrypty = new QueryEncrypty();
         double[] index = queryEncrypty.BuildQueryVector(data, sk);
 
-        // Ë÷Òý¼ÓÃÜ
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         splitedMatrix splitedMatrix = queryEncrypty.splitQueryVector(index, sk);
         secureQueryIndex = queryEncrypty.EncQueryVector(splitedMatrix, sk);
 
@@ -62,7 +62,7 @@ public class secret {
         bt.AESString=new Vector<>();
         bt.dataIndex=new Vector<>();
         //   System.out.println("1111");
-        //¶ÔbloodtalbeÖÐµÄÊý¾ÝÐÐ¼ÓÃÜ£¬·µ»Ø¼ÓÃÜºóµÄbt
+        //ï¿½ï¿½bloodtalbeï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ï¿½Üºï¿½ï¿½bt
         for(int i=0;i<bt.num.size();++i){
 
             bt.AESString.add(AES.encrypt(bt.num.elementAt(i)));
@@ -75,7 +75,7 @@ public class secret {
 
     private static toothTable SecretForTooth(toothTable tt)
     {
-        //¶ÔtoothtalbeÖÐµÄÊý¾ÝÐÐ¼ÓÃÜ£¬·µ»Ø¼ÓÃÜºóµÄbt
+        //ï¿½ï¿½toothtalbeï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ï¿½Üºï¿½ï¿½bt
         tt.AESString=new Vector<>();
         tt.dataIndex=new Vector<>();
         for(int i=0;i<tt.num.size();++i){
@@ -87,10 +87,13 @@ public class secret {
 
     public static fatherTable Secret(fatherTable ft)
     {
-        //·ÖÀà¶ÔftÖÐµÄÊý¾Ý½øÐÐ¼ÓÃÜ£¬·µ»Ø¼ÓÃÜºóµÄft
-        if(((bloodTable)ft).m_type=="bloodTable")ft=SecretForBlood((bloodTable) ft);
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ftï¿½Ðµï¿½ï¿½ï¿½ï¿½Ý½ï¿½ï¿½Ð¼ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ï¿½Üºï¿½ï¿½ft
+        if(ft.getM_type().equals("toothTable"))ft=SecretForTooth((toothTable) ft);;
+        if(ft.getM_type().equals("bloodTable"))ft=SecretForBlood((bloodTable) ft);;
+   //     if(((toothTable)ft).m_type=="toothTable")ft=SecretForTooth((toothTable) ft);
+//        if(((bloodTable)ft).m_type=="bloodTable")ft=SecretForBlood((bloodTable) ft);
 
-        if(ft.m_type=="toothTable")ft=SecretForTooth((toothTable) ft);
+
 
         return  ft;
     }

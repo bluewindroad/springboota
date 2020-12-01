@@ -14,7 +14,9 @@ public class bloodTable extends fatherTable  {
     public  Vector<String> incluStr;
     public  Vector<splitedMatrix> dataIndex;
     public  Vector<String> AESString;
-
+    public String getM_type(){
+        return m_type;
+    }
 
     void addDBH()
     {

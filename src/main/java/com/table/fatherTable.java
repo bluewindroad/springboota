@@ -3,6 +3,8 @@ package com.table;
 public abstract class fatherTable {
     public   String m_type,m_name,m_date;
     public  int m_fieldNum;
-    //¸¸Àà½ö±£´æ±íµÄÌõÄ¿Êı£¬ÀàĞÍ£¬ËùÊô²¡ÈËºÍÈÕÆÚ
-
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëºï¿½ï¿½ï¿½ï¿½ï¿½
+    public String getM_type(){
+        return m_type;
+    }
 }

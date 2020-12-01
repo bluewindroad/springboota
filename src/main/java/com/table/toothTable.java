@@ -11,4 +11,7 @@ public class toothTable extends fatherTable{
     public Vector<splitedMatrix> dataIndex;
     public Vector<String> AESString;
     public Vector<String> incluStr;
+    public String getM_type(){
+        return m_type;
+    }
 }

@@ -101,4 +101,13 @@ public interface UserMapper {
 
     //通过医生手机号修改医生的个人资料
     void updateDocDetail(Map<String,Object>map);
+
+    //通过病人手机号修改病人资料
+    void updatePatientDetail(Map<String,Object>map);
+
+    //通过医生编号查看其管理的病人列表
+    List<Map<Object,Object>> getDocsPatient(@Param("DoctorID")int DoctorID);
+
+    //通过医生id查看其管理病人的所有体检单
+    List<Map<Object,Object>>getDocsPatientsRecord(@Param("PatientID")int PatientID,@Param("DoctorID")int DoctorID);
 }

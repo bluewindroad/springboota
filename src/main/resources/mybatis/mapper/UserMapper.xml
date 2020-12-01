@@ -209,6 +209,42 @@ select * from admin_account where accountID=#{accountID}
         works = #{works},
         evaluation=#{evaluation}
         where phoneNo=#{phoneNo}
-
     </update>
+
+<!--    通过病人手机号修改病人信息-->
+    <update id="updatePatientDetail" parameterType="java.util.HashMap">
+        update patient
+        set
+        birthday=#{birthday},
+        sex=#{sex}
+        where phoneNo=#{phoneNo}
+    </update>
+
+<!--    通过医生编号查看其管理的病人列表-->
+    <select id="getDocsPatient" resultType="java.util.HashMap">
+         SELECT patientID as num,patientName as name,sex ,phoneNo as tel
+         FROM patient
+         WHERE patientID in
+         (SELECT patientID FROM doctor_patient_relationship WHERE doctorID=#{DoctorID});
+    </select>
+
+
+<!--通过医生id查看其管理病人的所有体检单-->
+    <select id="getDocsPatientsRecord" resultType="java.util.HashMap" >
+         SELECT "血液科" AS tag,b.bloodNo as num,b.DATE as `date`,p.patientName as name,p.phoneNo as tel FROM blood_routine b, patient p
+          WHERE b.patientID=p.patientID
+          AND b.patientID
+          IN
+          (SELECT patientID FROM restriction  WHERE doctorID=#{DoctorID} AND blood_grant=1)
+          AND b.patientID = #{PatientID}
+          Union
+        SELECT "口腔科" AS tag,b.toothNo as num ,b.DATE as `date`,p.patientName as name,p.phoneNo as tel FROM tooth_routine b, patient p
+        WHERE b.patientID=p.patientID
+        AND  b.patientID
+        IN
+        (SELECT patientID FROM restriction  WHERE doctorID=#{DoctorID} AND tooth_grant=1)
+        AND b.patientID = #{PatientID};
+
+
+    </select>
 </mapper>
