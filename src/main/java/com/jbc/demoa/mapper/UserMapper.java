@@ -99,5 +99,6 @@ public interface UserMapper {
     void deleteRestrictionByPatientId(@Param("PatientID")int PatientID,@Param("DoctorID")int DoctorID);
 
 
-    //通过医生手机号查询医生详细信息
+    //通过医生手机号修改医生的个人资料
+    void updateDocDetail(Map<String,Object>map);
 }

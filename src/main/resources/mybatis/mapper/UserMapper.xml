@@ -191,4 +191,24 @@ select * from admin_account where accountID=#{accountID}
         delete from restriction
         where patientID=#{PatientID} and doctorID=#{DoctorID}
     </delete>
+
+<!--    通过医生手机号修改医生的个人信息-->
+    <update id="updateDocDetail" parameterType="java.util.HashMap">
+        update doctor
+        set
+        sex=#{sex},
+        address=#{address},
+        birthday=#{birthday},
+        introduction=#{introduction},
+        expertise=#{expertise},
+        achievements=#{achievements},
+        nationality=#{nationality},
+        nation = #{nation},
+        college=#{college},
+        nativePlace=#{nativePlace},
+        works = #{works},
+        evaluation=#{evaluation}
+        where phoneNo=#{phoneNo}
+
+    </update>
 </mapper>

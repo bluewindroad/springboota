@@ -1,9 +1,12 @@
 package com.jbc.demoa.controller;
 
+import com.DBH;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import com.jbc.demoa.mapper.UserMapper;
 import com.jbc.demoa.pojo.*;
+import com.jsonHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -238,12 +241,14 @@ public class UserController {
     //查询数据
     @CrossOrigin
     @RequestMapping(value = "/selectPatientCase", method = RequestMethod.POST, consumes = "application/json; charset=UTF-8")
-    public String selectPatientCase(@RequestBody String jsonParamStr){
+    public List<JSONObject>  selectPatientCase(@RequestBody String jsonParamStr){
 
         JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
         JSONArray value = jsonObject.getJSONArray("value");
-        System.out.println(jsonObject);
-        return "1";
+//        System.out.println(jsonObject);
+        int PatientId=userMapper.getPatientIdByPhone(jsonObject.getString("phone"));
+        jsonObject.put("patientId",PatientId);
+        return DBH.search(jsonHelper.JsonToJson(jsonObject));
     }
 
 
@@ -255,5 +260,41 @@ public class UserController {
         JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
         String DoctorPhone=jsonObject.getString("DoctorPhone");
         return userMapper.getDocDetailInformationByPhone(DoctorPhone);
+    }
+
+    //修改医生个人信息
+    @CrossOrigin
+    @RequestMapping(value = "/updateDocDetail", method = RequestMethod.POST, consumes = "application/json; charset=UTF-8")
+    public String updateDocDetail(@RequestBody String jsonParamStr){
+        JSONObject jsonObject = JSONObject.parseObject(jsonParamStr);
+        Map<String,Object>map=new HashMap<>();
+        String DoctorPhone=jsonObject.getString("DoctorPhone");
+        String sex=jsonObject.getString("sex");
+        if (sex.length()==2){
+            if (sex.equals("男性")){
+                map.put("sex","f");
+            }else if (sex.equals("女性")){
+                map.put("sex","m");
+            }
+        }else {
+            map.put("sex",jsonObject.getString("sex"));
+        }
+        map.put("phoneNo",DoctorPhone);
+        map.put("birthday",jsonObject.getString("birthday").substring(0,10));
+        map.put("nationality",jsonObject.getString("nationality"));
+        map.put("nation",jsonObject.getString("nation"));
+        map.put("college",jsonObject.getString("college"));
+        map.put("address",jsonObject.getString("address"));
+        map.put("expertise",jsonObject.getString("expertise"));
+        map.put("works",jsonObject.getString("works"));
+        map.put("introduction",jsonObject.getString("introduction"));
+        map.put("achievements",jsonObject.getString("achievements"));
+        map.put("evaluation",jsonObject.getString("evaluation"));
+        map.put("nativePlace",jsonObject.getString("nativePlace"));
+//        System.out.println("birthday:"+jsonObject.getString("birthday").substring(0,10));
+        System.out.println("长度:"+jsonObject.getString("sex").length());
+        userMapper.updateDocDetail(map);
+
+        return "修改成功!";
     }
 }
